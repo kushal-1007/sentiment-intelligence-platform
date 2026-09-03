@@ -1,0 +1,40 @@
+project:
+  name: sentiment-intelligence-platform
+  version: "1.0.0"
+
+data:
+  dataset_name: yelp_review_full
+  raw_dir: data/raw
+  processed_dir: data/processed
+  splits_dir: data/splits
+  train_size: 0.8
+  val_size: 0.1
+  test_size: 0.1
+  max_samples: 50000
+  random_seed: 42
+
+model:
+  base_model: distilbert-base-uncased
+  num_labels: 5
+  max_length: 256
+  freeze_base_layers: true
+
+training:
+  epochs: 5
+  batch_size: 32
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  early_stopping_patience: 2
+  use_class_weights: true
+  output_dir: models/distilbert-sentiment
+  device: mps
+
+mlflow:
+  experiment_name: sentiment-intelligence
+  tracking_uri: mlruns
+
+monitoring:
+  db_path: data/predictions.db
+  drift_report_dir: reports/drift
+  confidence_threshold: 0.6
