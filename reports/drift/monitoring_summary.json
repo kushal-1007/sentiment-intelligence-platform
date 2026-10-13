@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-06-28T16:54:24.445310+00:00",
+  "total_predictions": 55,
+  "reference_size": 27,
+  "current_size": 28,
+  "confidence_alert": false,
+  "avg_confidence": 0.7391,
+  "prediction_dist": {
+    "3 stars": 9,
+    "5 stars": 8,
+    "2 stars": 6,
+    "1 star": 5
+  },
+  "plot_path": "reports/drift/drift_plot_20260628_095424.png",
+  "drift_results": {
+    "confidence": {
+      "ref_mean": 0.8009,
+      "cur_mean": 0.7391,
+      "shift": 0.0617,
+      "drifted": false
+    },
+    "char_len": {
+      "ref_mean": 40.037,
+      "cur_mean": 34.3571,
+      "shift": 5.6799,
+      "drifted": false
+    },
+    "predicted_class": {
+      "ref_mean": 2.1481,
+      "cur_mean": 2.0,
+      "shift": 0.1481,
+      "drifted": false
+    }
+  },
+  "any_drift": false
+}

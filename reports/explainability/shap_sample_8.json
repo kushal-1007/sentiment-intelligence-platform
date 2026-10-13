@@ -1,0 +1,70 @@
+{
+  "sample_id": 8,
+  "text": "Stumbled upon this place whilst looking for a gift for a friend who's big into whiskies so figured I couldn;t go wrong. I don;t know anything about whisky but the staff were really helpful, and knew their stuff so I managed to come out with a decent bottle. They didn't push me into buying the really",
+  "true_label": "5\u2605",
+  "predicted_label": "4\u2605",
+  "confidence": 0.7611,
+  "correct": false,
+  "token_importance": [
+    {
+      "token": "definitely ",
+      "shap_value": 0.042309
+    },
+    {
+      "token": "couldn",
+      "shap_value": 0.024939
+    },
+    {
+      "token": "nice ",
+      "shap_value": 0.024194
+    },
+    {
+      "token": ".",
+      "shap_value": 0.023045
+    },
+    {
+      "token": "good ",
+      "shap_value": 0.02244
+    },
+    {
+      "token": ", ",
+      "shap_value": 0.019372
+    },
+    {
+      "token": "t ",
+      "shap_value": 0.015122
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.015112
+    },
+    {
+      "token": "overly ",
+      "shap_value": 0.013383
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.01243
+    },
+    {
+      "token": ", ",
+      "shap_value": 0.012275
+    },
+    {
+      "token": "decent ",
+      "shap_value": 0.012049
+    },
+    {
+      "token": "staff",
+      "shap_value": -0.01158
+    },
+    {
+      "token": "They ",
+      "shap_value": 0.011428
+    },
+    {
+      "token": "d ",
+      "shap_value": 0.00845
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "sample_id": 1,
+  "text": "I've eaten at their other location on Smoke Ranch, it was fine. This place was so disorganized it's hard to believe they're still in business! We were the only customers in the place, it took 10 minutes to get a water, milk and tea. We ordered 2 hamburgers and one breakfast. One hamburger and the br",
+  "true_label": "1\u2605",
+  "predicted_label": "1\u2605",
+  "confidence": 0.5832,
+  "correct": true,
+  "token_importance": [
+    {
+      "token": "fine",
+      "shap_value": -0.223831
+    },
+    {
+      "token": "di",
+      "shap_value": 0.089523
+    },
+    {
+      "token": "it ",
+      "shap_value": -0.072596
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.052605
+    },
+    {
+      "token": "customers ",
+      "shap_value": 0.046409
+    },
+    {
+      "token": "This ",
+      "shap_value": 0.04629
+    },
+    {
+      "token": "This ",
+      "shap_value": 0.032988
+    },
+    {
+      "token": "place ",
+      "shap_value": 0.032988
+    },
+    {
+      "token": "Go ",
+      "shap_value": 0.030627
+    },
+    {
+      "token": "elsewhere",
+      "shap_value": 0.030627
+    },
+    {
+      "token": "only ",
+      "shap_value": 0.03002
+    },
+    {
+      "token": "sick ",
+      "shap_value": 0.028892
+    },
+    {
+      "token": "? ",
+      "shap_value": -0.027234
+    },
+    {
+      "token": "ordered ",
+      "shap_value": 0.026285
+    },
+    {
+      "token": ". ",
+      "shap_value": -0.026058
+    }
+  ]
+}

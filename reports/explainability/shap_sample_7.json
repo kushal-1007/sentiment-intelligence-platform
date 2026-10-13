@@ -1,0 +1,70 @@
+{
+  "sample_id": 7,
+  "text": "Good food, great beer and a great atmosphere. The place is always popular when I have guests come into town.",
+  "true_label": "4\u2605",
+  "predicted_label": "4\u2605",
+  "confidence": 0.6809,
+  "correct": true,
+  "token_importance": [
+    {
+      "token": "Good ",
+      "shap_value": 0.148505
+    },
+    {
+      "token": "beer ",
+      "shap_value": 0.057064
+    },
+    {
+      "token": "when ",
+      "shap_value": 0.051967
+    },
+    {
+      "token": "and ",
+      "shap_value": 0.033117
+    },
+    {
+      "token": "a ",
+      "shap_value": 0.032987
+    },
+    {
+      "token": "food",
+      "shap_value": 0.026746
+    },
+    {
+      "token": "The ",
+      "shap_value": 0.02306
+    },
+    {
+      "token": "always ",
+      "shap_value": 0.022274
+    },
+    {
+      "token": "",
+      "shap_value": -0.015387
+    },
+    {
+      "token": "into ",
+      "shap_value": 0.013674
+    },
+    {
+      "token": "town",
+      "shap_value": 0.012716
+    },
+    {
+      "token": "is ",
+      "shap_value": -0.011873
+    },
+    {
+      "token": "popular ",
+      "shap_value": 0.011176
+    },
+    {
+      "token": "place ",
+      "shap_value": 0.009892
+    },
+    {
+      "token": "great ",
+      "shap_value": 0.009857
+    }
+  ]
+}

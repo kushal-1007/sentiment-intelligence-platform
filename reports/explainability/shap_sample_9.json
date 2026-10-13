@@ -1,0 +1,70 @@
+{
+  "sample_id": 9,
+  "text": "This place holds a special place in my heart because it's where my husband and I first started dating and we've seen it go through the management and ownership changes. \\nI almost feel like this place would be better going under a new name to save them from all these yelp reviews.\\nI love the extens",
+  "true_label": "5\u2605",
+  "predicted_label": "5\u2605",
+  "confidence": 0.8181,
+  "correct": true,
+  "token_importance": [
+    {
+      "token": "their ",
+      "shap_value": 0.052558
+    },
+    {
+      "token": "although ",
+      "shap_value": -0.047904
+    },
+    {
+      "token": "Loved ",
+      "shap_value": 0.04336
+    },
+    {
+      "token": "owners ",
+      "shap_value": 0.042745
+    },
+    {
+      "token": "met ",
+      "shap_value": 0.039285
+    },
+    {
+      "token": "place ",
+      "shap_value": 0.03747
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.037009
+    },
+    {
+      "token": "quiet ",
+      "shap_value": -0.033599
+    },
+    {
+      "token": "management ",
+      "shap_value": 0.032854
+    },
+    {
+      "token": "owner",
+      "shap_value": 0.030878
+    },
+    {
+      "token": "heart ",
+      "shap_value": 0.029319
+    },
+    {
+      "token": "They ",
+      "shap_value": 0.025696
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.024511
+    },
+    {
+      "token": "husband ",
+      "shap_value": 0.021336
+    },
+    {
+      "token": "place ",
+      "shap_value": 0.021261
+    }
+  ]
+}

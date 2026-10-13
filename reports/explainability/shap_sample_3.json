@@ -1,0 +1,70 @@
+{
+  "sample_id": 3,
+  "text": "Stayed at this hotel for just one night, rooms were fresh and clean, but parked in the parking garage, first level, end near pool well lit, but in the morning discovered back window and side rear were broken, they took a few DVD's, but upsetting part beyond that is that no one was notified at the re",
+  "true_label": "2\u2605",
+  "predicted_label": "2\u2605",
+  "confidence": 0.53,
+  "correct": true,
+  "token_importance": [
+    {
+      "token": "but ",
+      "shap_value": 0.07373
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.043251
+    },
+    {
+      "token": ", ",
+      "shap_value": 0.043176
+    },
+    {
+      "token": ", ",
+      "shap_value": 0.042532
+    },
+    {
+      "token": "but ",
+      "shap_value": 0.04028
+    },
+    {
+      "token": ", ",
+      "shap_value": 0.039947
+    },
+    {
+      "token": "and ",
+      "shap_value": 0.035
+    },
+    {
+      "token": "fresh ",
+      "shap_value": 0.033575
+    },
+    {
+      "token": "or ",
+      "shap_value": 0.032898
+    },
+    {
+      "token": "for ",
+      "shap_value": 0.032212
+    },
+    {
+      "token": "at ",
+      "shap_value": 0.030901
+    },
+    {
+      "token": "but ",
+      "shap_value": 0.029896
+    },
+    {
+      "token": ", ",
+      "shap_value": 0.029034
+    },
+    {
+      "token": "and ",
+      "shap_value": 0.027902
+    },
+    {
+      "token": "and ",
+      "shap_value": 0.024552
+    }
+  ]
+}

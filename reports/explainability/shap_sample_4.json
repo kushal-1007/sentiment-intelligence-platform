@@ -1,0 +1,70 @@
+{
+  "sample_id": 4,
+  "text": "The best thing about this place is the customer service. Everyone was very friendly and prompt. They do close a litte early for Friday and Saturday though...right at the peak hours when most people want to eat dinner on the weekends. The inside is very small too, so it's not good for groups. \\n\\nThe",
+  "true_label": "3\u2605",
+  "predicted_label": "3\u2605",
+  "confidence": 0.5619,
+  "correct": true,
+  "token_importance": [
+    {
+      "token": "bland",
+      "shap_value": 0.38551
+    },
+    {
+      "token": ".",
+      "shap_value": 0.118892
+    },
+    {
+      "token": "loved ",
+      "shap_value": -0.085266
+    },
+    {
+      "token": "not ",
+      "shap_value": 0.077489
+    },
+    {
+      "token": ". ",
+      "shap_value": -0.077269
+    },
+    {
+      "token": "amazing",
+      "shap_value": -0.067315
+    },
+    {
+      "token": "great ",
+      "shap_value": -0.054688
+    },
+    {
+      "token": "overall ",
+      "shap_value": -0.054653
+    },
+    {
+      "token": "everything ",
+      "shap_value": -0.047936
+    },
+    {
+      "token": "very ",
+      "shap_value": -0.046834
+    },
+    {
+      "token": "very ",
+      "shap_value": -0.041726
+    },
+    {
+      "token": "choice",
+      "shap_value": -0.040378
+    },
+    {
+      "token": "Everyone ",
+      "shap_value": -0.037155
+    },
+    {
+      "token": "tender ",
+      "shap_value": -0.036073
+    },
+    {
+      "token": "I ",
+      "shap_value": 0.034696
+    }
+  ]
+}

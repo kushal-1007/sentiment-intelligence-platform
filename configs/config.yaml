@@ -16,13 +16,13 @@ data:
 model:
   base_model: distilbert-base-uncased
   num_labels: 5
-  max_length: 256
+  max_length: 512
   freeze_base_layers: true
 
 training:
   epochs: 5
   batch_size: 32
-  learning_rate: 2e-5
+  learning_rate: 0.00002
   weight_decay: 0.01
   warmup_ratio: 0.1
   early_stopping_patience: 2
@@ -32,7 +32,7 @@ training:
 
 mlflow:
   experiment_name: sentiment-intelligence
-  tracking_uri: mlruns
+  tracking_uri: sqlite:///mlruns.db
 
 monitoring:
   db_path: data/predictions.db

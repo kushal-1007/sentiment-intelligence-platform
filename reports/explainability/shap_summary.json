@@ -1,0 +1,707 @@
+{
+  "total_samples": 10,
+  "correct": 6,
+  "accuracy": 0.6,
+  "samples": [
+    {
+      "sample_id": 0,
+      "text": "it has been over a year since I visited this hole of a restaurant, but my experience is what counts. The staff was confused and slow to visit our table, the pizza might be the most boring bland pizza I have ever had. The soda didn't taste right and the place was a total mess. To top it off the price",
+      "true_label": "1\u2605",
+      "predicted_label": "2\u2605",
+      "confidence": 0.6642,
+      "correct": false,
+      "token_importance": [
+        {
+          "token": "amazing",
+          "shap_value": 0.183783
+        },
+        {
+          "token": "not ",
+          "shap_value": 0.112178
+        },
+        {
+          "token": "staff ",
+          "shap_value": 0.088458
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.063462
+        },
+        {
+          "token": "back ",
+          "shap_value": 0.059064
+        },
+        {
+          "token": "and ",
+          "shap_value": 0.057274
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.054827
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.05336
+        },
+        {
+          "token": "total ",
+          "shap_value": 0.043854
+        },
+        {
+          "token": "might ",
+          "shap_value": -0.043655
+        },
+        {
+          "token": "and ",
+          "shap_value": 0.043455
+        },
+        {
+          "token": "bit ",
+          "shap_value": -0.041282
+        },
+        {
+          "token": "bland ",
+          "shap_value": 0.038585
+        },
+        {
+          "token": ", ",
+          "shap_value": 0.033947
+        },
+        {
+          "token": "restaurant",
+          "shap_value": 0.03246
+        }
+      ]
+    },
+    {
+      "sample_id": 1,
+      "text": "I've eaten at their other location on Smoke Ranch, it was fine. This place was so disorganized it's hard to believe they're still in business! We were the only customers in the place, it took 10 minutes to get a water, milk and tea. We ordered 2 hamburgers and one breakfast. One hamburger and the br",
+      "true_label": "1\u2605",
+      "predicted_label": "1\u2605",
+      "confidence": 0.5832,
+      "correct": true,
+      "token_importance": [
+        {
+          "token": "fine",
+          "shap_value": -0.223831
+        },
+        {
+          "token": "di",
+          "shap_value": 0.089523
+        },
+        {
+          "token": "it ",
+          "shap_value": -0.072596
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.052605
+        },
+        {
+          "token": "customers ",
+          "shap_value": 0.046409
+        },
+        {
+          "token": "This ",
+          "shap_value": 0.04629
+        },
+        {
+          "token": "This ",
+          "shap_value": 0.032988
+        },
+        {
+          "token": "place ",
+          "shap_value": 0.032988
+        },
+        {
+          "token": "Go ",
+          "shap_value": 0.030627
+        },
+        {
+          "token": "elsewhere",
+          "shap_value": 0.030627
+        },
+        {
+          "token": "only ",
+          "shap_value": 0.03002
+        },
+        {
+          "token": "sick ",
+          "shap_value": 0.028892
+        },
+        {
+          "token": "? ",
+          "shap_value": -0.027234
+        },
+        {
+          "token": "ordered ",
+          "shap_value": 0.026285
+        },
+        {
+          "token": ". ",
+          "shap_value": -0.026058
+        }
+      ]
+    },
+    {
+      "sample_id": 2,
+      "text": "You should not be called Rain, you should be called Fire! Why is this club the hottest club I've ever been to? You know there's going to be a ton of people here, why not crank the air a little. And please stop flaming up the place! \\n\\nOh the irony, rain... pfftt!\\n\\nCome here if you like house musi",
+      "true_label": "2\u2605",
+      "predicted_label": "1\u2605",
+      "confidence": 0.4652,
+      "correct": false,
+      "token_importance": [
+        {
+          "token": "stop ",
+          "shap_value": 0.127153
+        },
+        {
+          "token": "hottest ",
+          "shap_value": -0.121304
+        },
+        {
+          "token": "Why ",
+          "shap_value": 0.109449
+        },
+        {
+          "token": "h ",
+          "shap_value": -0.103882
+        },
+        {
+          "token": ".",
+          "shap_value": 0.10189
+        },
+        {
+          "token": "!",
+          "shap_value": 0.082594
+        },
+        {
+          "token": ".",
+          "shap_value": 0.077227
+        },
+        {
+          "token": "You ",
+          "shap_value": 0.07679
+        },
+        {
+          "token": "",
+          "shap_value": -0.075875
+        },
+        {
+          "token": "! ",
+          "shap_value": 0.073483
+        },
+        {
+          "token": "is ",
+          "shap_value": -0.071045
+        },
+        {
+          "token": "rain",
+          "shap_value": 0.069566
+        },
+        {
+          "token": ", ",
+          "shap_value": 0.069449
+        },
+        {
+          "token": "up ",
+          "shap_value": -0.065079
+        },
+        {
+          "token": "not ",
+          "shap_value": 0.05813
+        }
+      ]
+    },
+    {
+      "sample_id": 3,
+      "text": "Stayed at this hotel for just one night, rooms were fresh and clean, but parked in the parking garage, first level, end near pool well lit, but in the morning discovered back window and side rear were broken, they took a few DVD's, but upsetting part beyond that is that no one was notified at the re",
+      "true_label": "2\u2605",
+      "predicted_label": "2\u2605",
+      "confidence": 0.53,
+      "correct": true,
+      "token_importance": [
+        {
+          "token": "but ",
+          "shap_value": 0.07373
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.043251
+        },
+        {
+          "token": ", ",
+          "shap_value": 0.043176
+        },
+        {
+          "token": ", ",
+          "shap_value": 0.042532
+        },
+        {
+          "token": "but ",
+          "shap_value": 0.04028
+        },
+        {
+          "token": ", ",
+          "shap_value": 0.039947
+        },
+        {
+          "token": "and ",
+          "shap_value": 0.035
+        },
+        {
+          "token": "fresh ",
+          "shap_value": 0.033575
+        },
+        {
+          "token": "or ",
+          "shap_value": 0.032898
+        },
+        {
+          "token": "for ",
+          "shap_value": 0.032212
+        },
+        {
+          "token": "at ",
+          "shap_value": 0.030901
+        },
+        {
+          "token": "but ",
+          "shap_value": 0.029896
+        },
+        {
+          "token": ", ",
+          "shap_value": 0.029034
+        },
+        {
+          "token": "and ",
+          "shap_value": 0.027902
+        },
+        {
+          "token": "and ",
+          "shap_value": 0.024552
+        }
+      ]
+    },
+    {
+      "sample_id": 4,
+      "text": "The best thing about this place is the customer service. Everyone was very friendly and prompt. They do close a litte early for Friday and Saturday though...right at the peak hours when most people want to eat dinner on the weekends. The inside is very small too, so it's not good for groups. \\n\\nThe",
+      "true_label": "3\u2605",
+      "predicted_label": "3\u2605",
+      "confidence": 0.5619,
+      "correct": true,
+      "token_importance": [
+        {
+          "token": "bland",
+          "shap_value": 0.38551
+        },
+        {
+          "token": ".",
+          "shap_value": 0.118892
+        },
+        {
+          "token": "loved ",
+          "shap_value": -0.085266
+        },
+        {
+          "token": "not ",
+          "shap_value": 0.077489
+        },
+        {
+          "token": ". ",
+          "shap_value": -0.077269
+        },
+        {
+          "token": "amazing",
+          "shap_value": -0.067315
+        },
+        {
+          "token": "great ",
+          "shap_value": -0.054688
+        },
+        {
+          "token": "overall ",
+          "shap_value": -0.054653
+        },
+        {
+          "token": "everything ",
+          "shap_value": -0.047936
+        },
+        {
+          "token": "very ",
+          "shap_value": -0.046834
+        },
+        {
+          "token": "very ",
+          "shap_value": -0.041726
+        },
+        {
+          "token": "choice",
+          "shap_value": -0.040378
+        },
+        {
+          "token": "Everyone ",
+          "shap_value": -0.037155
+        },
+        {
+          "token": "tender ",
+          "shap_value": -0.036073
+        },
+        {
+          "token": "I ",
+          "shap_value": 0.034696
+        }
+      ]
+    },
+    {
+      "sample_id": 5,
+      "text": "I'd give it 3.5 stars. I had the longanisa fried rice (very tasty), the binagoongan (very very good and i love the crispiness of the skin, but there is a weird aftertaste that i couldn't figure out), and the sigsig (it was alright). I am Filipino, but I'm pretty \\\"Americanized\\\" so I'm not sure if t",
+      "true_label": "3\u2605",
+      "predicted_label": "3\u2605",
+      "confidence": 0.8194,
+      "correct": true,
+      "token_importance": [
+        {
+          "token": "3",
+          "shap_value": 0.171799
+        },
+        {
+          "token": "stars",
+          "shap_value": 0.099266
+        },
+        {
+          "token": "alright",
+          "shap_value": 0.076965
+        },
+        {
+          "token": ".",
+          "shap_value": 0.069203
+        },
+        {
+          "token": "give ",
+          "shap_value": 0.050676
+        },
+        {
+          "token": ". ",
+          "shap_value": -0.044808
+        },
+        {
+          "token": "",
+          "shap_value": -0.042812
+        },
+        {
+          "token": "I",
+          "shap_value": -0.042812
+        },
+        {
+          "token": "'",
+          "shap_value": -0.042812
+        },
+        {
+          "token": "it ",
+          "shap_value": 0.039638
+        },
+        {
+          "token": "but ",
+          "shap_value": 0.030726
+        },
+        {
+          "token": "(",
+          "shap_value": 0.026752
+        },
+        {
+          "token": "but ",
+          "shap_value": -0.025567
+        },
+        {
+          "token": "d ",
+          "shap_value": 0.025198
+        },
+        {
+          "token": ". ",
+          "shap_value": -0.022114
+        }
+      ]
+    },
+    {
+      "sample_id": 6,
+      "text": "I've always held a special place in my heart for Cheba Hut. It was definitely a college staple. Who would want a full \\\"Blunt\\\" of \\\"The Kind?\\\" Yes, it may have a little of the pothead culture to the place but that adds to the appeal. \\n\\nThe sandwiches are baked, which really brings out the flavor",
+      "true_label": "4\u2605",
+      "predicted_label": "5\u2605",
+      "confidence": 0.5167,
+      "correct": false,
+      "token_importance": [
+        {
+          "token": "this ",
+          "shap_value": 0.054421
+        },
+        {
+          "token": "delicious",
+          "shap_value": 0.050533
+        },
+        {
+          "token": "than ",
+          "shap_value": 0.050104
+        },
+        {
+          "token": "much ",
+          "shap_value": 0.044064
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.042362
+        },
+        {
+          "token": "and ",
+          "shap_value": 0.041967
+        },
+        {
+          "token": "place ",
+          "shap_value": 0.040979
+        },
+        {
+          "token": "definitely ",
+          "shap_value": -0.03608
+        },
+        {
+          "token": "staff ",
+          "shap_value": 0.034849
+        },
+        {
+          "token": "So ",
+          "shap_value": 0.034221
+        },
+        {
+          "token": "Who",
+          "shap_value": 0.029369
+        },
+        {
+          "token": "to ",
+          "shap_value": -0.024369
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.024108
+        },
+        {
+          "token": "adds ",
+          "shap_value": 0.02181
+        },
+        {
+          "token": "back",
+          "shap_value": -0.020694
+        }
+      ]
+    },
+    {
+      "sample_id": 7,
+      "text": "Good food, great beer and a great atmosphere. The place is always popular when I have guests come into town.",
+      "true_label": "4\u2605",
+      "predicted_label": "4\u2605",
+      "confidence": 0.6809,
+      "correct": true,
+      "token_importance": [
+        {
+          "token": "Good ",
+          "shap_value": 0.148505
+        },
+        {
+          "token": "beer ",
+          "shap_value": 0.057064
+        },
+        {
+          "token": "when ",
+          "shap_value": 0.051967
+        },
+        {
+          "token": "and ",
+          "shap_value": 0.033117
+        },
+        {
+          "token": "a ",
+          "shap_value": 0.032987
+        },
+        {
+          "token": "food",
+          "shap_value": 0.026746
+        },
+        {
+          "token": "The ",
+          "shap_value": 0.02306
+        },
+        {
+          "token": "always ",
+          "shap_value": 0.022274
+        },
+        {
+          "token": "",
+          "shap_value": -0.015387
+        },
+        {
+          "token": "into ",
+          "shap_value": 0.013674
+        },
+        {
+          "token": "town",
+          "shap_value": 0.012716
+        },
+        {
+          "token": "is ",
+          "shap_value": -0.011873
+        },
+        {
+          "token": "popular ",
+          "shap_value": 0.011176
+        },
+        {
+          "token": "place ",
+          "shap_value": 0.009892
+        },
+        {
+          "token": "great ",
+          "shap_value": 0.009857
+        }
+      ]
+    },
+    {
+      "sample_id": 8,
+      "text": "Stumbled upon this place whilst looking for a gift for a friend who's big into whiskies so figured I couldn;t go wrong. I don;t know anything about whisky but the staff were really helpful, and knew their stuff so I managed to come out with a decent bottle. They didn't push me into buying the really",
+      "true_label": "5\u2605",
+      "predicted_label": "4\u2605",
+      "confidence": 0.7611,
+      "correct": false,
+      "token_importance": [
+        {
+          "token": "definitely ",
+          "shap_value": 0.042309
+        },
+        {
+          "token": "couldn",
+          "shap_value": 0.024939
+        },
+        {
+          "token": "nice ",
+          "shap_value": 0.024194
+        },
+        {
+          "token": ".",
+          "shap_value": 0.023045
+        },
+        {
+          "token": "good ",
+          "shap_value": 0.02244
+        },
+        {
+          "token": ", ",
+          "shap_value": 0.019372
+        },
+        {
+          "token": "t ",
+          "shap_value": 0.015122
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.015112
+        },
+        {
+          "token": "overly ",
+          "shap_value": 0.013383
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.01243
+        },
+        {
+          "token": ", ",
+          "shap_value": 0.012275
+        },
+        {
+          "token": "decent ",
+          "shap_value": 0.012049
+        },
+        {
+          "token": "staff",
+          "shap_value": -0.01158
+        },
+        {
+          "token": "They ",
+          "shap_value": 0.011428
+        },
+        {
+          "token": "d ",
+          "shap_value": 0.00845
+        }
+      ]
+    },
+    {
+      "sample_id": 9,
+      "text": "This place holds a special place in my heart because it's where my husband and I first started dating and we've seen it go through the management and ownership changes. \\nI almost feel like this place would be better going under a new name to save them from all these yelp reviews.\\nI love the extens",
+      "true_label": "5\u2605",
+      "predicted_label": "5\u2605",
+      "confidence": 0.8181,
+      "correct": true,
+      "token_importance": [
+        {
+          "token": "their ",
+          "shap_value": 0.052558
+        },
+        {
+          "token": "although ",
+          "shap_value": -0.047904
+        },
+        {
+          "token": "Loved ",
+          "shap_value": 0.04336
+        },
+        {
+          "token": "owners ",
+          "shap_value": 0.042745
+        },
+        {
+          "token": "met ",
+          "shap_value": 0.039285
+        },
+        {
+          "token": "place ",
+          "shap_value": 0.03747
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.037009
+        },
+        {
+          "token": "quiet ",
+          "shap_value": -0.033599
+        },
+        {
+          "token": "management ",
+          "shap_value": 0.032854
+        },
+        {
+          "token": "owner",
+          "shap_value": 0.030878
+        },
+        {
+          "token": "heart ",
+          "shap_value": 0.029319
+        },
+        {
+          "token": "They ",
+          "shap_value": 0.025696
+        },
+        {
+          "token": ". ",
+          "shap_value": 0.024511
+        },
+        {
+          "token": "husband ",
+          "shap_value": 0.021336
+        },
+        {
+          "token": "place ",
+          "shap_value": 0.021261
+        }
+      ]
+    }
+  ]
+}

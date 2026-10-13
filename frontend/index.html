@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentiment Intelligence</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @keyframes starPop {
+      0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+      60%  { transform: scale(1.35) rotate(6deg); }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fillBar { from { width: 0%; } }
+    @keyframes pulse-ring {
+      0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+      70%  { transform: scale(1);    box-shadow: 0 0 0 8px rgba(99,102,241,0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes livePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .star-animate    { animation: starPop 0.45s cubic-bezier(.34,1.56,.64,1) both; }
+    .slide-up        { animation: slideUp 0.3s ease both; }
+    .bar-animate     { animation: fillBar 0.6s cubic-bezier(.4,0,.2,1) both; }
+    .analyzing-pulse { animation: pulse-ring 1.5s ease infinite; }
+    .live-dot        { animation: livePulse 1.2s ease infinite; }
+    textarea:focus   { outline: none; }
+    .conf-ring       { transition: stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1); }
+    .tab-active      { border-bottom: 2px solid #111; color: #111; }
+    .tab-inactive    { border-bottom: 2px solid transparent; color: #9ca3af; }
+    .tab-inactive:hover { color: #6b7280; }
+    .drop-zone { border: 2px dashed #e5e7eb; transition: all 0.2s; }
+    .drop-zone.dragover { border-color: #818cf8; background: #eef2ff; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 font-sans">
+
+  <!-- Header -->
+  <div class="bg-white border-b border-gray-100 sticky top-0 z-10">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center">
+          <span style="color:white;font-size:14px">★</span>
+        </div>
+        <div>
+          <span class="font-semibold text-gray-900 text-sm">Sentiment Intelligence</span>
+          <span class="text-gray-300 mx-2">·</span>
+          <span class="text-xs text-gray-400">DistilBERT · 5-class · F1 = 0.626</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <div id="ws-status" class="hidden items-center gap-1.5 text-xs">
+          <div class="w-1.5 h-1.5 rounded-full bg-green-400 live-dot"></div>
+          <span class="text-green-500">live</span>
+        </div>
+        <div id="api-status" class="flex items-center gap-1.5 text-xs text-gray-400">
+          <div class="w-1.5 h-1.5 rounded-full bg-gray-300" id="status-dot"></div>
+          <span id="status-text">checking...</span>
+        </div>
+        <a href="/docs" target="_blank"
+           class="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition">
+          API docs ↗
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+      <!-- LEFT -->
+      <div class="lg:col-span-2 space-y-4">
+
+        <!-- Tabs -->
+        <div class="flex gap-0 border-b border-gray-100">
+          <button onclick="switchTab('single')" id="tab-single"
+            class="tab-active px-4 py-2 text-sm font-medium transition mr-4">
+            Single review
+          </button>
+          <button onclick="switchTab('batch')" id="tab-batch"
+            class="tab-inactive px-4 py-2 text-sm font-medium transition mr-4">
+            Batch analyze
+          </button>
+          <button onclick="switchTab('trends')" id="tab-trends"
+            class="tab-inactive px-4 py-2 text-sm font-medium transition">
+            Trend analytics
+          </button>
+        </div>
+
+        <!-- SINGLE TAB -->
+        <div id="panel-single">
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <div class="flex gap-2 mb-3 flex-wrap">
+              <span class="text-xs text-gray-400 self-center">Try:</span>
+              <button onclick="setExample(0)" class="text-xs px-3 py-1 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition border border-red-100">1★ negative</button>
+              <button onclick="setExample(1)" class="text-xs px-3 py-1 rounded-full bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition border border-yellow-100">3★ mixed</button>
+              <button onclick="setExample(2)" class="text-xs px-3 py-1 rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition border border-green-100">5★ positive</button>
+              <button onclick="setExample(3)" class="text-xs px-3 py-1 rounded-full bg-purple-50 text-purple-600 hover:bg-purple-100 transition border border-purple-100">tricky negation</button>
+            </div>
+            <div class="relative">
+              <div id="live-badge" class="hidden absolute top-2 left-3 z-10 flex items-center gap-1.5">
+                <div class="w-1.5 h-1.5 rounded-full bg-green-400 live-dot"></div>
+                <span class="text-xs text-green-500 font-medium">analyzing live</span>
+              </div>
+              <textarea id="review-input" rows="5"
+                placeholder="Type or paste a Yelp review here..."
+                oninput="updateCharCount(); handleLiveInput(this.value)"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.ctrlKey){event.preventDefault();predictSingle();}"
+                class="w-full border border-gray-200 rounded-xl p-3 text-sm resize-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition text-gray-800 placeholder-gray-300"
+                style="padding-top:2rem"></textarea>
+              <div class="absolute bottom-2 right-3 text-xs text-gray-300" id="char-count">0 / 5000</div>
+            </div>
+            <p class="text-xs text-gray-300 mt-1.5">Stars update automatically as you type · press Enter or click button for manual analysis</p>
+            <div class="flex gap-2 mt-3">
+              <button onclick="predictSingle()" id="predict-btn"
+                class="flex-1 py-2.5 rounded-xl text-sm font-medium bg-gray-900 text-white hover:bg-gray-700 active:scale-[0.98] transition disabled:opacity-40 disabled:cursor-not-allowed">
+                Analyze sentiment
+              </button>
+              <button onclick="toggleMic()" id="mic-btn" title="Speak your review"
+                class="px-4 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-500 hover:bg-gray-50 transition">🎤 Speak</button>
+              <button onclick="clearInput()" class="px-4 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-500 hover:bg-gray-50 transition">
+                Clear</button>
+            </div>
+            <p id="single-error" class="mt-2 text-sm text-red-400 hidden"></p>
+            <p id="mic-status" class="mt-2 text-xs text-gray-400 hidden"></p>
+            <div id="result-section" class="hidden mt-5 pt-5 border-t border-gray-50">
+              <div class="text-center mb-5">
+                <div id="stars-row" class="flex gap-1.5 justify-center mb-2"></div>
+                <div class="flex items-center justify-center gap-2">
+                  <span id="result-label" class="text-lg font-semibold text-gray-900"></span>
+                  <span id="result-badge" class="text-xs px-2 py-0.5 rounded-full font-medium"></span>
+                </div>
+              </div>
+              <div class="flex items-center gap-6 mb-5">
+                <div class="relative flex-shrink-0">
+                  <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="#f3f4f6" stroke-width="6"/>
+                    <circle id="conf-circle" cx="40" cy="40" r="32" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)" class="conf-ring"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span id="conf-pct" class="text-sm font-semibold text-gray-900"></span>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <div class="text-xs text-gray-400 mb-1">Model confidence</div>
+                  <div id="conf-desc" class="text-sm text-gray-600"></div>
+                  <div class="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div id="conf-bar" class="h-1.5 rounded-full bar-animate" style="width:0%"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-2" id="prob-bars"></div>
+              <div id="feedback-row" class="hidden mt-4 pt-4 border-t border-gray-50">
+                <p id="feedback-msg" class="text-xs text-gray-400 mb-2"></p>
+                <div id="feedback-buttons" class="flex gap-2">
+                  <button onclick="submitFeedback(true)" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm border border-gray-200 text-gray-600 hover:bg-green-50 hover:border-green-200 hover:text-green-600 transition">👍 Correct</button>
+                  <button onclick="showCorrectionModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm border border-gray-200 text-gray-600 hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition">👎 Wrong — fix it</button>
+                </div>
+                <div id="feedback-thanks" class="hidden text-xs text-green-500 mt-2 flex items-center gap-1.5">
+                  <span>✓</span><span id="feedback-thanks-msg"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BATCH TAB -->
+        <div id="panel-batch" class="hidden">
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <p class="text-xs text-gray-400 mb-2">One review per line — up to 100</p>
+            <textarea id="batch-input" rows="8"
+              placeholder="The food was incredible!&#10;Worst service ever&#10;It was okay, nothing special"
+              class="w-full border border-gray-200 rounded-xl p-3 text-sm resize-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-300 transition text-gray-800 placeholder-gray-300"></textarea>
+            <div class="flex gap-2 mt-3">
+              <button onclick="predictBatch()" id="batch-btn" class="flex-1 py-2.5 rounded-xl text-sm font-medium bg-gray-900 text-white hover:bg-gray-700 active:scale-[0.98] transition disabled:opacity-40">Analyze reviews</button>
+              <button onclick="downloadCSV()" id="csv-btn" class="hidden px-4 py-2.5 rounded-xl text-sm border border-gray-200 text-gray-600 hover:bg-gray-50 transition">↓ CSV</button>
+            </div>
+            <p id="batch-error" class="mt-2 text-sm text-red-400 hidden"></p>
+            <div id="batch-results" class="hidden mt-5 pt-5 border-t border-gray-50">
+              <div id="batch-summary" class="flex gap-2 flex-wrap mb-4"></div>
+              <div id="batch-list" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TREND ANALYTICS TAB -->
+        <div id="panel-trends" class="hidden">
+
+          <!-- Upload card -->
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
+            <h2 class="text-sm font-semibold text-gray-800 mb-1">Sentiment Trend Analytics</h2>
+            <p class="text-xs text-gray-400 mb-4">Upload a CSV with <code class="bg-gray-100 px-1 rounded">date</code> and <code class="bg-gray-100 px-1 rounded">review_text</code> columns to see sentiment trends over time.</p>
+
+            <!-- Drop zone -->
+            <div id="drop-zone"
+              class="drop-zone rounded-xl p-8 text-center cursor-pointer mb-3"
+              onclick="document.getElementById('csv-file-input').click()"
+              ondragover="handleDragOver(event)"
+              ondragleave="handleDragLeave(event)"
+              ondrop="handleDrop(event)">
+              <div class="text-3xl mb-2">📂</div>
+              <div class="text-sm font-medium text-gray-600">Drop your CSV here or click to browse</div>
+              <div class="text-xs text-gray-400 mt-1">Columns needed: date, review_text</div>
+              <input type="file" id="csv-file-input" accept=".csv" class="hidden" onchange="handleFileSelect(event)">
+            </div>
+
+            <!-- Sample CSV download -->
+            <button onclick="downloadSampleCSV()"
+              class="text-xs text-indigo-500 hover:text-indigo-700 transition">
+              ↓ Download sample CSV to try
+            </button>
+
+            <p id="trend-error" class="mt-2 text-sm text-red-400 hidden"></p>
+          </div>
+
+          <!-- Results — hidden until CSV loaded -->
+          <div id="trend-results" class="hidden space-y-4">
+
+            <!-- Processing status -->
+            <div id="trend-processing" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+                <span class="text-sm text-gray-600" id="trend-progress-text">Analyzing reviews...</span>
+              </div>
+              <div class="mt-3 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div id="trend-progress-bar" class="h-1.5 bg-indigo-400 rounded-full transition-all duration-300" style="width:0%"></div>
+              </div>
+            </div>
+
+            <!-- Summary cards -->
+            <div id="summary-cards" class="grid grid-cols-2 gap-3">
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div class="text-xs text-gray-400 mb-1">Total reviews</div>
+                <div class="text-2xl font-semibold text-gray-900" id="sc-total">—</div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div class="text-xs text-gray-400 mb-1">Overall avg rating</div>
+                <div class="text-2xl font-semibold text-gray-900" id="sc-avg">—</div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div class="text-xs text-gray-400 mb-1">Best period</div>
+                <div class="text-sm font-semibold text-green-600" id="sc-best">—</div>
+                <div class="text-xs text-gray-400" id="sc-best-score"></div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                <div class="text-xs text-gray-400 mb-1">Worst period</div>
+                <div class="text-sm font-semibold text-red-500" id="sc-worst">—</div>
+                <div class="text-xs text-gray-400" id="sc-worst-score"></div>
+              </div>
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 col-span-2">
+                <div class="text-xs text-gray-400 mb-1">Trend direction</div>
+                <div class="text-sm font-semibold" id="sc-trend">—</div>
+                <div class="text-xs text-gray-400 mt-0.5" id="sc-trend-detail"></div>
+              </div>
+            </div>
+
+            <!-- Sentiment over time chart -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-4">
+                Average sentiment score by month
+              </div>
+              <canvas id="trend-line-chart" height="120"></canvas>
+            </div>
+
+            <!-- Star distribution chart -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-4">
+                Star rating distribution over time
+              </div>
+              <canvas id="trend-bar-chart" height="120"></canvas>
+            </div>
+
+            <!-- Data table -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div class="flex justify-between items-center mb-3">
+                <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">Monthly breakdown</div>
+                <button onclick="downloadTrendCSV()" class="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">↓ Export</button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs" id="trend-table">
+                  <thead>
+                    <tr class="text-gray-400 border-b border-gray-100">
+                      <th class="text-left pb-2 font-medium">Month</th>
+                      <th class="text-right pb-2 font-medium">Reviews</th>
+                      <th class="text-right pb-2 font-medium">Avg rating</th>
+                      <th class="text-right pb-2 font-medium">1★</th>
+                      <th class="text-right pb-2 font-medium">2★</th>
+                      <th class="text-right pb-2 font-medium">3★</th>
+                      <th class="text-right pb-2 font-medium">4★</th>
+                      <th class="text-right pb-2 font-medium">5★</th>
+                    </tr>
+                  </thead>
+                  <tbody id="trend-table-body" class="text-gray-700"></tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT sidebar -->
+      <div class="space-y-4">
+
+        <!-- Model stats -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-4">Model stats</div>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Macro F1</span>
+              <div class="flex items-center gap-2">
+                <div class="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-1.5 rounded-full bg-indigo-400" style="width:62.6%"></div>
+                </div>
+                <span class="text-sm font-medium text-gray-800">0.626</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">ROC-AUC</span>
+              <div class="flex items-center gap-2">
+                <div class="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-1.5 rounded-full bg-indigo-400" style="width:90.07%"></div>
+                </div>
+                <span class="text-sm font-medium text-gray-800">0.901</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Accuracy</span>
+              <div class="flex items-center gap-2">
+                <div class="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-1.5 rounded-full bg-indigo-400" style="width:62.65%"></div>
+                </div>
+                <span class="text-sm font-medium text-gray-800">0.627</span>
+              </div>
+            </div>
+            <div class="pt-2 border-t border-gray-50 flex justify-between">
+              <span class="text-sm text-gray-500">vs TF-IDF</span>
+              <span class="text-sm font-medium text-green-500">+9.3% F1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active learning stats -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Active learning</div>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Total corrections</span>
+              <span class="text-sm font-medium text-gray-800" id="al-total">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Pending retraining</span>
+              <span class="text-sm font-medium text-gray-800" id="al-pending">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Threshold</span>
+              <span class="text-sm font-medium text-gray-800">20 corrections</span>
+            </div>
+            <div id="al-ready" class="hidden mt-2 text-xs text-amber-500 font-medium bg-amber-50 px-3 py-2 rounded-lg border border-amber-100">
+              ⚡ Ready to retrain — run src/training/retrain.py
+            </div>
+          </div>
+        </div>
+
+        <!-- Session stats -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Session stats</div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="text-center p-3 bg-gray-50 rounded-xl">
+              <div class="text-2xl font-semibold text-gray-900" id="stat-count">0</div>
+              <div class="text-xs text-gray-400 mt-0.5">predictions</div>
+            </div>
+            <div class="text-center p-3 bg-gray-50 rounded-xl">
+              <div class="text-2xl font-semibold text-gray-900" id="stat-avg">—</div>
+              <div class="text-xs text-gray-400 mt-0.5">avg conf</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div class="flex justify-between items-center mb-3">
+            <div class="text-xs font-medium text-gray-400 uppercase tracking-wide">Recent predictions</div>
+            <button onclick="clearHistory()" class="text-xs text-gray-300 hover:text-gray-500 transition">clear</button>
+          </div>
+          <div id="history-list" class="space-y-2">
+            <div class="text-xs text-gray-300 text-center py-4">No predictions yet</div>
+          </div>
+        </div>
+
+        <!-- Per-class F1 -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div class="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Per-class F1</div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2"><span class="text-xs text-gray-500 w-6">1★</span><div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full" style="width:74.3%;background:#ef4444"></div></div><span class="text-xs text-gray-500 w-8 text-right">0.743</span></div>
+            <div class="flex items-center gap-2"><span class="text-xs text-gray-500 w-6">2★</span><div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full" style="width:56.9%;background:#f97316"></div></div><span class="text-xs text-gray-500 w-8 text-right">0.569</span></div>
+            <div class="flex items-center gap-2"><span class="text-xs text-gray-500 w-6">3★</span><div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full" style="width:56.9%;background:#eab308"></div></div><span class="text-xs text-gray-500 w-8 text-right">0.569</span></div>
+            <div class="flex items-center gap-2"><span class="text-xs text-gray-500 w-6">4★</span><div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full" style="width:54.7%;background:#84cc16"></div></div><span class="text-xs text-gray-500 w-8 text-right">0.547</span></div>
+            <div class="flex items-center gap-2"><span class="text-xs text-gray-500 w-6">5★</span><div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div class="h-1.5 rounded-full" style="width:70.4%;background:#22c55e"></div></div><span class="text-xs text-gray-500 w-8 text-right">0.704</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Correction modal -->
+  <div id="correction-modal" class="hidden fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-80 mx-4">
+      <div class="text-sm font-semibold text-gray-900 mb-1">What should the correct rating be?</div>
+      <p class="text-xs text-gray-400 mb-4">Your correction will be used to retrain the model.</p>
+      <div class="grid grid-cols-5 gap-2 mb-5">
+        <button onclick="submitCorrection(0)" class="py-2 rounded-xl text-sm border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition">1★</button>
+        <button onclick="submitCorrection(1)" class="py-2 rounded-xl text-sm border border-orange-200 bg-orange-50 text-orange-600 hover:bg-orange-100 transition">2★</button>
+        <button onclick="submitCorrection(2)" class="py-2 rounded-xl text-sm border border-yellow-200 bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition">3★</button>
+        <button onclick="submitCorrection(3)" class="py-2 rounded-xl text-sm border border-green-200 bg-green-50 text-green-600 hover:bg-green-100 transition">4★</button>
+        <button onclick="submitCorrection(4)" class="py-2 rounded-xl text-sm border border-green-300 bg-green-100 text-green-700 hover:bg-green-200 transition">5★</button>
+      </div>
+      <button onclick="closeCorrectionModal()" class="w-full py-2 rounded-xl text-sm border border-gray-200 text-gray-500 hover:bg-gray-50 transition">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const LABELS   = ['1 star','2 stars','3 stars','4 stars','5 stars'];
+    const COLORS   = ['#ef4444','#f97316','#eab308','#84cc16','#22c55e'];
+    const BADGES   = ['Very negative','Negative','Neutral','Positive','Very positive'];
+    const BADGE_BG = ['#FEE2E2','#FFEDD5','#FEF9C3','#DCFCE7','#DCFCE7'];
+    const BADGE_TX = ['#991B1B','#9A3412','#854D0E','#166534','#14532D'];
+    const EXAMPLES = [
+      "Absolutely terrible food, worst service I have ever experienced. Never coming back!",
+      "The food was decent but nothing special. Service was okay. Would probably not return.",
+      "Incredible food, amazing staff, perfect ambience. Best restaurant in the city!",
+      "The food was not bad but I would not say it was great either. Kind of average."
+    ];
+
+    let history=[], sessionCount=0, sessionConfSum=0, lastBatchResults=[];
+    let ws=null, debounceTimer=null;
+    let trendLineChart=null, trendBarChart=null, trendData=[];
+
+    // ── WebSocket ──
+    function connectWebSocket() {
+      const proto = location.protocol==='https:'?'wss':'ws';
+      ws = new WebSocket(`${proto}://${location.host}/ws/predict`);
+      ws.onopen = () => {
+        document.getElementById('ws-status').classList.remove('hidden');
+        document.getElementById('ws-status').classList.add('flex');
+      };
+      ws.onmessage = (e) => {
+        const d = JSON.parse(e.data);
+        if (d.status==='ok') showLiveResult(d);
+        else if (d.status==='too_short') hideLiveResult();
+      };
+      ws.onclose = () => {
+        document.getElementById('ws-status').classList.add('hidden');
+        document.getElementById('ws-status').classList.remove('flex');
+        setTimeout(connectWebSocket, 2000);
+      };
+      ws.onerror = () => ws.close();
+    }
+    function handleLiveInput(text) {
+      clearTimeout(debounceTimer);
+      if (text.trim().length<5) { hideLiveResult(); return; }
+      debounceTimer = setTimeout(() => {
+        if (ws && ws.readyState===WebSocket.OPEN) ws.send(text.trim());
+      }, 400);
+    }
+    function showLiveResult(data) {
+      document.getElementById('result-section').classList.remove('hidden');
+      document.getElementById('live-badge').classList.remove('hidden');
+      renderStars(data.predicted_class);
+      document.getElementById('result-label').textContent = data.predicted_label;
+      const badge = document.getElementById('result-badge');
+      badge.textContent = BADGES[data.predicted_class];
+      badge.style.cssText = `background:${BADGE_BG[data.predicted_class]};color:${BADGE_TX[data.predicted_class]};font-size:11px;padding:2px 8px;border-radius:9999px`;
+      renderConfidence(data.confidence, data.predicted_class);
+      renderProbBars(data.all_probabilities);
+      window._lastPrediction = { text: document.getElementById('review-input').value.trim(), predicted_class: data.predicted_class, confidence: data.confidence };
+      const feedbackRow = document.getElementById('feedback-row');
+      const feedbackMsg = document.getElementById('feedback-msg');
+      feedbackRow.classList.remove('hidden');
+      document.getElementById('feedback-buttons').classList.remove('hidden');
+      document.getElementById('feedback-thanks').classList.add('hidden');
+      if (data.confidence < 0.60) {
+        feedbackMsg.textContent = '⚠️ Model is uncertain — was this correct?';
+        feedbackMsg.className = 'text-xs text-amber-500 mb-2 font-medium';
+      } else {
+        feedbackMsg.textContent = 'Was this prediction correct?';
+        feedbackMsg.className = 'text-xs text-gray-400 mb-2';
+      }
+    }
+    function hideLiveResult() {
+      document.getElementById('result-section').classList.add('hidden');
+      document.getElementById('live-badge').classList.add('hidden');
+    }
+    connectWebSocket();
+    // ── Voice input ──
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognizer = null, micOn = false, baseText = '', committed = '';
+
+    // Browsers without speech support (e.g. Firefox): hide the button, typing still works
+    if (!SpeechRec) document.getElementById('mic-btn').classList.add('hidden');
+
+    function setMicStatus(msg) {
+      const el = document.getElementById('mic-status');
+      el.textContent = msg;
+      el.classList.toggle('hidden', !msg);
+    }
+
+    function updateMicButton() {
+      const btn = document.getElementById('mic-btn');
+      btn.textContent = micOn ? '⏹ Stop' : '🎤 Speak';
+      btn.classList.toggle('bg-red-50', micOn);
+      btn.classList.toggle('text-red-500', micOn);
+    }
+
+    function toggleMic() {
+      if (!window.isSecureContext) {
+        setMicStatus('The mic only works on https or http://localhost.');
+        return;
+      }
+      micOn ? stopMic() : startMic();
+    }
+
+    function startMic() {
+      const box = document.getElementById('review-input');
+      baseText = box.value.trim();   // anything already typed is kept
+      committed = '';                // finished sentences from this session
+
+      recognizer = new SpeechRec();
+      recognizer.lang = 'en-US';
+      recognizer.continuous = true;      // keep listening across pauses
+      recognizer.interimResults = true;  // show words while you are still speaking
+
+      recognizer.onresult = (e) => {
+        let interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const r = e.results[i];
+          if (r.isFinal) committed += r[0].transcript.trim() + ' ';
+          else interim += r[0].transcript;
+        }
+        box.value = (baseText + ' ' + committed + interim).trim();
+        updateCharCount();
+        // Score only finished sentences, so the stars don't flicker on guesses
+        if (interim === '') handleLiveInput(box.value);
+      };
+
+      recognizer.onerror = (e) => {
+        if (e.error === 'no-speech') return;   // silence is normal, onend restarts us
+        const msgs = {
+          'not-allowed': 'Microphone blocked. Allow mic access in the browser address bar.',
+          'network': 'Speech service unreachable. Voice input needs an internet connection.'
+        };
+        setMicStatus(msgs[e.error] || 'Mic error: ' + e.error);
+        micOn = false;                          // stop so we don't restart in a loop
+      };
+
+      // Chrome ends the session after silence; restart while the mic is switched on
+      recognizer.onend = () => {
+        if (micOn) recognizer.start();
+        else { updateMicButton(); setMicStatus(''); }
+      };
+
+      micOn = true;
+      recognizer.start();
+      updateMicButton();
+      setMicStatus('Listening... speak your review.');
+    }
+
+    function stopMic() {
+      micOn = false;
+      if (recognizer) recognizer.stop();
+    }
+
+    // If you type while the mic is on, treat your edit as the new starting text
+    document.getElementById('review-input').addEventListener('input', () => {
+      if (micOn) {
+        baseText = document.getElementById('review-input').value.trim();
+        committed = '';
+      }
+    });
+
+    // ── Feedback ──
+    function showCorrectionModal() { document.getElementById('correction-modal').classList.remove('hidden'); }
+    function closeCorrectionModal() { document.getElementById('correction-modal').classList.add('hidden'); }
+    async function submitFeedback(isCorrect) {
+      const pred = window._lastPrediction; if (!pred) return;
+      await sendFeedback(pred.text, pred.predicted_class, pred.predicted_class, pred.confidence);
+      showFeedbackThanks('Thanks — feedback saved!');
+    }
+    async function submitCorrection(correctClass) {
+      const pred = window._lastPrediction; if (!pred) return;
+      closeCorrectionModal();
+      await sendFeedback(pred.text, pred.predicted_class, correctClass, pred.confidence);
+      showFeedbackThanks(`Correction saved — should be ${LABELS[correctClass]}.`);
+      refreshFeedbackStats();
+    }
+    async function sendFeedback(text, predictedClass, correctClass, confidence) {
+      try {
+        await fetch('/feedback', { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ text, predicted_class:predictedClass, correct_class:correctClass, confidence }) });
+        refreshFeedbackStats();
+      } catch(e) { console.error('Feedback error:', e); }
+    }
+    function showFeedbackThanks(msg) {
+      document.getElementById('feedback-buttons').classList.add('hidden');
+      document.getElementById('feedback-thanks').classList.remove('hidden');
+      document.getElementById('feedback-thanks-msg').textContent = msg;
+    }
+    async function refreshFeedbackStats() {
+      try {
+        const d = await (await fetch('/feedback/stats')).json();
+        document.getElementById('al-total').textContent = d.total_corrections;
+        document.getElementById('al-pending').textContent = d.pending_retraining;
+        document.getElementById('al-ready').classList.toggle('hidden', !d.ready_to_retrain);
+      } catch(e) {}
+    }
+    refreshFeedbackStats();
+
+    // ── Health ──
+    async function checkHealth() {
+      try {
+        const d = await (await fetch('/health')).json();
+        if (d.model_loaded) {
+          document.getElementById('status-dot').className = 'w-1.5 h-1.5 rounded-full bg-green-400';
+          document.getElementById('status-text').textContent = 'model ready';
+          document.getElementById('status-text').className = 'text-green-500';
+        }
+      } catch {
+        document.getElementById('status-dot').className = 'w-1.5 h-1.5 rounded-full bg-red-400';
+        document.getElementById('status-text').textContent = 'offline';
+      }
+    }
+    checkHealth();
+
+    // ── Tabs ──
+    function switchTab(tab) {
+      ['single','batch','trends'].forEach(t => {
+        document.getElementById(`panel-${t}`).classList.toggle('hidden', t!==tab);
+        document.getElementById(`tab-${t}`).className = t===tab
+          ? 'tab-active px-4 py-2 text-sm font-medium transition mr-4'
+          : 'tab-inactive px-4 py-2 text-sm font-medium transition mr-4';
+      });
+    }
+
+    // ── Utils ──
+    function setExample(i) { document.getElementById('review-input').value=EXAMPLES[i]; updateCharCount(); handleLiveInput(EXAMPLES[i]); }
+    function clearInput() {
+        if (micOn) stopMic();
+        baseText = ''; committed = '';
+        document.getElementById('review-input').value='';
+        hideLiveResult();
+        document.getElementById('char-count').textContent='0 / 5000';
+      }
+    // function clearInput() { document.getElementById('review-input').value=''; hideLiveResult(); document.getElementById('char-count').textContent='0 / 5000'; }
+    function updateCharCount() {
+      const n=document.getElementById('review-input').value.length;
+      const el=document.getElementById('char-count');
+      el.textContent=n+' / 5000';
+      el.className='absolute bottom-2 right-3 text-xs '+(n>4500?'text-red-400':'text-gray-300');
+    }
+
+    // ── Stars ──
+    function renderStars(pc) {
+      const row=document.getElementById('stars-row'); row.innerHTML='';
+      for (let i=0;i<5;i++) {
+        const s=document.createElement('span'); s.textContent='★';
+        s.style.cssText=`font-size:2.2rem;color:${i<=pc?COLORS[pc]:'#e5e7eb'};display:inline-block`;
+        if(i<=pc){s.style.animationDelay=(i*0.08)+'s';s.classList.add('star-animate');}
+        row.appendChild(s);
+      }
+    }
+
+    // ── Confidence ──
+    function renderConfidence(confidence, pc) {
+      const pct=Math.round(confidence*100);
+      const ring=document.getElementById('conf-circle');
+      ring.style.strokeDashoffset=Math.round((1-confidence)*201);
+      ring.style.stroke=COLORS[pc];
+      document.getElementById('conf-pct').textContent=pct+'%';
+      document.getElementById('conf-bar').style.cssText=`width:${pct}%;background:${COLORS[pc]}`;
+      const descs=['Very uncertain','Fairly uncertain','Moderate confidence','Good confidence','Very confident'];
+      document.getElementById('conf-desc').textContent=descs[pct>=90?4:pct>=75?3:pct>=60?2:pct>=45?1:0];
+    }
+
+    // ── Prob bars ──
+    function renderProbBars(probs) {
+      const c=document.getElementById('prob-bars'); c.innerHTML='';
+      const maxPct=Math.max(...LABELS.map(l=>Math.round((probs[l]||0)*100)));
+      LABELS.forEach((label,i) => {
+        const pct=Math.round((probs[label]||0)*100);
+        const isTop=pct===maxPct;
+        c.innerHTML+=`<div class="flex items-center gap-2 ${isTop?'opacity-100':'opacity-70'}">
+          <span class="text-xs text-gray-500 w-14 text-right">${label}</span>
+          <div class="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+            <div class="h-2 rounded-full bar-animate" style="width:${pct}%;background:${COLORS[i]}"></div>
+          </div>
+          <span class="text-xs ${isTop?'font-medium text-gray-800':'text-gray-400'} w-8">${pct}%</span>
+        </div>`;
+      });
+    }
+
+    // ── History ──
+    function addToHistory(text, pc, confidence) {
+      history.unshift({text:text.slice(0,60)+(text.length>60?'…':''), pc, confidence, time:new Date().toLocaleTimeString()});
+      if(history.length>8) history.pop();
+      renderHistory();
+      sessionCount++; sessionConfSum+=confidence;
+      document.getElementById('stat-count').textContent=sessionCount;
+      document.getElementById('stat-avg').textContent=Math.round(sessionConfSum/sessionCount*100)+'%';
+    }
+    function renderHistory() {
+      const el=document.getElementById('history-list');
+      if(!history.length){el.innerHTML='<div class="text-xs text-gray-300 text-center py-4">No predictions yet</div>';return;}
+      el.innerHTML=history.map((h,idx)=>`
+        <div class="flex items-start gap-2 p-2 rounded-lg hover:bg-gray-50 transition cursor-pointer"
+             style="animation:slideUp 0.25s ease ${idx*0.04}s both" onclick="loadFromHistory(${idx})">
+          <span style="color:${COLORS[h.pc]};font-size:0.85rem;flex-shrink:0;margin-top:1px">${'★'.repeat(h.pc+1)}</span>
+          <div class="flex-1 min-w-0">
+            <div class="text-xs text-gray-700 truncate">${h.text}</div>
+            <div class="text-xs text-gray-400 mt-0.5">${Math.round(h.confidence*100)}% · ${h.time}</div>
+          </div>
+        </div>`).join('');
+    }
+    function loadFromHistory(idx) {
+      document.getElementById('review-input').value=history[idx].text.endsWith('…')?history[idx].text.slice(0,-1):history[idx].text;
+      switchTab('single');
+    }
+    function clearHistory(){history=[];renderHistory();}
+
+    // ── Manual predict ──
+    async function predictSingle() {
+      const text=document.getElementById('review-input').value.trim(); if(!text) return;
+      const btn=document.getElementById('predict-btn');
+      const err=document.getElementById('single-error');
+      btn.disabled=true; btn.textContent='Analyzing...'; btn.classList.add('analyzing-pulse'); err.classList.add('hidden');
+      try {
+        const data=await(await fetch('/predict',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})})).json();
+        document.getElementById('result-section').classList.remove('hidden');
+        renderStars(data.predicted_class);
+        document.getElementById('result-label').textContent=data.predicted_label;
+        const badge=document.getElementById('result-badge');
+        badge.textContent=BADGES[data.predicted_class];
+        badge.style.cssText=`background:${BADGE_BG[data.predicted_class]};color:${BADGE_TX[data.predicted_class]};font-size:11px;padding:2px 8px;border-radius:9999px`;
+        renderConfidence(data.confidence,data.predicted_class);
+        renderProbBars(data.all_probabilities);
+        addToHistory(text,data.predicted_class,data.confidence);
+        window._lastPrediction={text,predicted_class:data.predicted_class,confidence:data.confidence};
+        const feedbackRow=document.getElementById('feedback-row');
+        const feedbackMsg=document.getElementById('feedback-msg');
+        feedbackRow.classList.remove('hidden');
+        document.getElementById('feedback-buttons').classList.remove('hidden');
+        document.getElementById('feedback-thanks').classList.add('hidden');
+        if(data.confidence<0.60){feedbackMsg.textContent='⚠️ Model is uncertain — was this correct?';feedbackMsg.className='text-xs text-amber-500 mb-2 font-medium';}
+        else{feedbackMsg.textContent='Was this prediction correct?';feedbackMsg.className='text-xs text-gray-400 mb-2';}
+      } catch {
+        err.textContent='Could not connect to API.'; err.classList.remove('hidden');
+      }
+      btn.disabled=false; btn.textContent='Analyze sentiment'; btn.classList.remove('analyzing-pulse');
+    }
+
+    // ── Batch ──
+    async function predictBatch() {
+      const lines=document.getElementById('batch-input').value.split('\n').map(t=>t.trim()).filter(Boolean);
+      if(!lines.length) return;
+      const btn=document.getElementById('batch-btn');
+      btn.disabled=true; btn.textContent=`Analyzing ${lines.length} reviews...`;
+      document.getElementById('batch-error').classList.add('hidden');
+      document.getElementById('batch-results').classList.add('hidden');
+      try {
+        const data=await(await fetch('/predict/batch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texts:lines})})).json();
+        lastBatchResults=data.results;
+        const counts=[0,0,0,0,0];
+        data.results.forEach(r=>counts[r.predicted_class]++);
+        document.getElementById('batch-summary').innerHTML=counts.map((c,i)=>
+          c>0?`<span class="text-xs px-2 py-1 rounded-full font-medium" style="background:${BADGE_BG[i]};color:${BADGE_TX[i]}">${'★'.repeat(i+1)} × ${c}</span>`:''
+        ).join('');
+        document.getElementById('batch-list').innerHTML=data.results.map((r,idx)=>`
+          <div class="flex items-center gap-3 p-3 rounded-xl border border-gray-50 hover:bg-gray-50 transition text-sm"
+               style="animation:slideUp 0.2s ease ${idx*0.04}s both">
+            <span style="color:${COLORS[r.predicted_class]};font-size:1rem;flex-shrink:0">${'★'.repeat(r.predicted_class+1)}</span>
+            <span class="flex-1 text-gray-700 truncate">${r.text}</span>
+            <span class="text-xs text-gray-400 flex-shrink-0">${Math.round(r.confidence*100)}%</span>
+          </div>`).join('');
+        document.getElementById('batch-results').classList.remove('hidden');
+        document.getElementById('csv-btn').classList.remove('hidden');
+      } catch {
+        document.getElementById('batch-error').textContent='Could not connect to API.';
+        document.getElementById('batch-error').classList.remove('hidden');
+      }
+      btn.disabled=false; btn.textContent='Analyze reviews';
+    }
+
+    function downloadCSV() {
+      if(!lastBatchResults.length) return;
+      const rows=lastBatchResults.map(r=>`"${r.text.replace(/"/g,'""')}",${r.predicted_label},${r.predicted_class},${r.confidence}`);
+      const blob=new Blob([['text,predicted_label,predicted_class,confidence',...rows].join('\n')],{type:'text/csv'});
+      Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'predictions.csv'}).click();
+    }
+
+    // ─────────────────────────────────────────
+    // ── TREND ANALYTICS ──
+    // ─────────────────────────────────────────
+
+    function parseDate(str) {
+      if (!str) return null;
+      str = str.trim();
+      // ISO: 2024-01-15
+      let m = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+      // US: 01/15/2024
+      m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (m) return new Date(+m[3], +m[1]-1, +m[2]);
+      // UK: 15/01/2024
+      m = str.match(/^(\d{1,2})-(\d{1,2})-(\d{4})/);
+      if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+      // Month year: Jan 2024 / January 2024
+      m = str.match(/^([A-Za-z]+)\s+(\d{4})/);
+      if (m) { const d=new Date(m[1]+' 1 '+m[2]); if(!isNaN(d)) return d; }
+      const d = new Date(str);
+      return isNaN(d) ? null : d;
+    }
+
+    function toMonthKey(date) {
+      return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`;
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      if (lines.length < 2) return null;
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g,''));
+      const dateIdx = headers.findIndex(h => h.includes('date') || h.includes('time'));
+      const textIdx = headers.findIndex(h => h.includes('review') || h.includes('text') || h.includes('comment'));
+      if (dateIdx === -1 || textIdx === -1) return null;
+      const rows = [];
+      for (let i=1; i<lines.length; i++) {
+        // simple CSV parse handling quoted fields
+        const cols = [];
+        let cur='', inQ=false;
+        for (const ch of lines[i]) {
+          if (ch==='"') { inQ=!inQ; }
+          else if (ch===',' && !inQ) { cols.push(cur.trim()); cur=''; }
+          else { cur+=ch; }
+        }
+        cols.push(cur.trim());
+        const dateStr = cols[dateIdx];
+        const reviewText = (cols[textIdx]||'').replace(/^"|"$/g,'');
+        if (dateStr && reviewText && reviewText.length >= 5) {
+          const date = parseDate(dateStr);
+          if (date) rows.push({ date, review_text: reviewText });
+        }
+      }
+      return rows;
+    }
+
+    // ── Drag and drop ──
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('drop-zone').classList.add('dragover');
+    }
+    function handleDragLeave(e) {
+      document.getElementById('drop-zone').classList.remove('dragover');
+    }
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('drop-zone').classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) processFile(file);
+    }
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) processFile(file);
+    }
+
+    function processFile(file) {
+      const err = document.getElementById('trend-error');
+      err.classList.add('hidden');
+      if (!file.name.endsWith('.csv')) {
+        err.textContent = 'Please upload a CSV file.';
+        err.classList.remove('hidden');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const rows = parseCSV(e.target.result);
+        if (!rows) {
+          err.textContent = 'Could not parse CSV. Make sure it has "date" and "review_text" columns.';
+          err.classList.remove('hidden');
+          return;
+        }
+        if (rows.length === 0) {
+          err.textContent = 'No valid rows found. Check date format and review text.';
+          err.classList.remove('hidden');
+          return;
+        }
+        runTrendAnalysis(rows);
+      };
+      reader.readAsText(file);
+    }
+
+    async function runTrendAnalysis(rows) {
+      document.getElementById('trend-results').classList.remove('hidden');
+      document.getElementById('trend-processing').classList.remove('hidden');
+      document.getElementById('summary-cards').classList.add('hidden');
+
+      const texts = rows.map(r => r.review_text);
+      const batchSize = 50;
+      const allPredictions = [];
+
+      for (let i=0; i<texts.length; i+=batchSize) {
+        const batch = texts.slice(i, i+batchSize);
+        const pct = Math.round(Math.min(i+batchSize, texts.length) / texts.length * 100);
+        document.getElementById('trend-progress-bar').style.width = pct+'%';
+        document.getElementById('trend-progress-text').textContent =
+          `Analyzing reviews ${Math.min(i+batchSize, texts.length)} / ${texts.length}...`;
+        try {
+          const data = await (await fetch('/predict/batch', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({texts: batch})
+          })).json();
+          allPredictions.push(...data.results);
+        } catch(e) {
+          document.getElementById('trend-error').textContent = 'API error during batch analysis.';
+          document.getElementById('trend-error').classList.remove('hidden');
+          document.getElementById('trend-processing').classList.add('hidden');
+          return;
+        }
+      }
+
+      document.getElementById('trend-processing').classList.add('hidden');
+      document.getElementById('summary-cards').classList.remove('hidden');
+
+      // pair dates with predictions
+      const tagged = rows.map((r, i) => ({
+        date: r.date,
+        month: toMonthKey(r.date),
+        predicted_class: allPredictions[i].predicted_class,
+        star_rating: allPredictions[i].predicted_class + 1,
+        text: r.review_text
+      }));
+      trendData = tagged;
+      renderTrendCharts(tagged);
+    }
+
+    function groupByMonth(tagged) {
+      const months = {};
+      tagged.forEach(row => {
+        if (!months[row.month]) {
+          months[row.month] = { count:0, total_stars:0, dist:[0,0,0,0,0] };
+        }
+        months[row.month].count++;
+        months[row.month].total_stars += row.star_rating;
+        months[row.month].dist[row.predicted_class]++;
+      });
+      return Object.entries(months)
+        .sort(([a],[b]) => a.localeCompare(b))
+        .map(([month, d]) => ({
+          month,
+          label: new Date(month+'-01').toLocaleDateString('en-US',{month:'short',year:'numeric'}),
+          count: d.count,
+          avg: Math.round((d.total_stars/d.count)*10)/10,
+          dist: d.dist
+        }));
+    }
+
+    function renderTrendCharts(tagged) {
+      const grouped = groupByMonth(tagged);
+
+      // ── Summary cards ──
+      const totalReviews = tagged.length;
+      const overallAvg   = Math.round(tagged.reduce((s,r)=>s+r.star_rating,0)/totalReviews*10)/10;
+      const bestMonth    = grouped.reduce((a,b) => a.avg>=b.avg?a:b);
+      const worstMonth   = grouped.reduce((a,b) => a.avg<=b.avg?a:b);
+
+      // trend: compare first half vs second half avg
+      const half = Math.floor(grouped.length/2);
+      const firstHalfAvg  = grouped.slice(0,Math.max(half,1)).reduce((s,r)=>s+r.avg,0)/Math.max(half,1);
+      const secondHalfAvg = grouped.slice(half).reduce((s,r)=>s+r.avg,0)/Math.max(grouped.length-half,1);
+      const trendDelta    = Math.round((secondHalfAvg-firstHalfAvg)*100)/100;
+
+      document.getElementById('sc-total').textContent = totalReviews;
+      document.getElementById('sc-avg').textContent = overallAvg + '★';
+      document.getElementById('sc-best').textContent = bestMonth.label;
+      document.getElementById('sc-best-score').textContent = bestMonth.avg + '★ avg';
+      document.getElementById('sc-worst').textContent = worstMonth.label;
+      document.getElementById('sc-worst-score').textContent = worstMonth.avg + '★ avg';
+
+      const trendEl = document.getElementById('sc-trend');
+      const trendDetail = document.getElementById('sc-trend-detail');
+      if (trendDelta > 0.1) {
+        trendEl.textContent = '↑ Improving';
+        trendEl.className = 'text-sm font-semibold text-green-600';
+        trendDetail.textContent = `+${trendDelta}★ in recent vs earlier period`;
+      } else if (trendDelta < -0.1) {
+        trendEl.textContent = '↓ Declining';
+        trendEl.className = 'text-sm font-semibold text-red-500';
+        trendDetail.textContent = `${trendDelta}★ in recent vs earlier period`;
+      } else {
+        trendEl.textContent = '→ Stable';
+        trendEl.className = 'text-sm font-semibold text-gray-600';
+        trendDetail.textContent = 'No significant trend detected';
+      }
+
+      // ── Line chart: avg sentiment per month ──
+      const labels = grouped.map(g => g.label);
+      const avgs   = grouped.map(g => g.avg);
+
+      // rolling average (window=3)
+      const rolling = avgs.map((v,i) => {
+        const window = avgs.slice(Math.max(0,i-1), i+2);
+        return Math.round(window.reduce((a,b)=>a+b,0)/window.length*10)/10;
+      });
+
+      if (trendLineChart) trendLineChart.destroy();
+      trendLineChart = new Chart(
+        document.getElementById('trend-line-chart').getContext('2d'),
+        {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Avg rating',
+                data: avgs,
+                borderColor: '#818cf8',
+                backgroundColor: 'rgba(129,140,248,0.08)',
+                pointBackgroundColor: '#818cf8',
+                pointRadius: 4,
+                tension: 0.3,
+                fill: true
+              },
+              {
+                label: 'Rolling avg',
+                data: rolling,
+                borderColor: '#f97316',
+                borderDash: [4,3],
+                pointRadius: 0,
+                tension: 0.4,
+                fill: false
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position:'bottom', labels:{font:{size:11}} } },
+            scales: {
+              y: { min:1, max:5, ticks:{stepSize:1,font:{size:11}}, grid:{color:'#f3f4f6'} },
+              x: { ticks:{font:{size:11}}, grid:{display:false} }
+            }
+          }
+        }
+      );
+
+      // ── Stacked bar: star distribution per month ──
+      const starColors = ['#ef4444','#f97316','#eab308','#84cc16','#22c55e'];
+      if (trendBarChart) trendBarChart.destroy();
+      trendBarChart = new Chart(
+        document.getElementById('trend-bar-chart').getContext('2d'),
+        {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [1,2,3,4,5].map((star,i) => ({
+              label: star+'★',
+              data: grouped.map(g => g.dist[i]),
+              backgroundColor: starColors[i],
+              stack: 'stack'
+            }))
+          },
+          options: {
+            responsive: true,
+            plugins: { legend:{position:'bottom',labels:{font:{size:11}}} },
+            scales: {
+              x: { stacked:true, ticks:{font:{size:11}}, grid:{display:false} },
+              y: { stacked:true, ticks:{font:{size:11}}, grid:{color:'#f3f4f6'} }
+            }
+          }
+        }
+      );
+
+      // ── Table ──
+      document.getElementById('trend-table-body').innerHTML = grouped.map(g => `
+        <tr class="border-b border-gray-50 hover:bg-gray-50">
+          <td class="py-2 font-medium text-gray-700">${g.label}</td>
+          <td class="py-2 text-right text-gray-500">${g.count}</td>
+          <td class="py-2 text-right font-medium" style="color:${COLORS[Math.round(g.avg)-1]}">${g.avg}★</td>
+          ${g.dist.map(d=>`<td class="py-2 text-right text-gray-500">${d}</td>`).join('')}
+        </tr>`).join('');
+    }
+
+    // ── Sample CSV download ──
+    function downloadSampleCSV() {
+      const sample = [
+        'date,review_text',
+        '2024-01-05,"Terrible experience, food was cold and staff was rude"',
+        '2024-01-12,"It was okay, nothing special but not bad either"',
+        '2024-01-20,"Amazing food and great service, will definitely return"',
+        '2024-02-03,"Disappointing meal, expected much better from this place"',
+        '2024-02-14,"Best valentines dinner we have ever had, absolutely incredible"',
+        '2024-02-22,"Food was decent but the wait time was too long"',
+        '2024-03-01,"Incredible pasta, best in the city without a doubt"',
+        '2024-03-15,"Not great, the food was bland and overpriced"',
+        '2024-03-28,"Lovely atmosphere and excellent service throughout the evening"',
+        '2024-04-05,"Worst restaurant experience ever, never coming back"',
+        '2024-04-18,"Good food and friendly staff, would recommend to friends"',
+        '2024-04-25,"Average experience, nothing memorable about the visit"',
+        '2024-05-02,"Outstanding food quality and presentation, exceeded expectations"',
+        '2024-05-15,"Service was slow and the pasta was undercooked"',
+        '2024-05-28,"Perfect evening, everything from food to service was top notch"',
+        '2024-06-10,"Really enjoyed the meal, great value for money"',
+        '2024-06-20,"Mediocre food, nothing to write home about honestly"',
+        '2024-06-28,"Fantastic experience, definitely our new favourite restaurant"',
+      ].join('\n');
+      const blob = new Blob([sample], {type:'text/csv'});
+      Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'sample_reviews.csv'}).click();
+    }
+
+    function downloadTrendCSV() {
+      if (!trendData.length) return;
+      const rows = trendData.map(r =>
+        `${r.month},"${r.text.replace(/"/g,'""')}",${r.star_rating},${r.predicted_class}`);
+      const blob = new Blob([['month,review_text,star_rating,predicted_class',...rows].join('\n')],{type:'text/csv'});
+      Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'trend_analysis.csv'}).click();
+    }
+  </script>
+</body>
+</html>

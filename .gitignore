@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+
+# macOS
+.DS_Store
+
+# Model weights (too large for GitHub; track with DVC instead)
+*.safetensors
+*.bin
+*.pt
+
+# Local databases / experiment tracking
+*.db
+mlruns/

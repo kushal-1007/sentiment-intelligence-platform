@@ -1,0 +1,70 @@
+{
+  "sample_id": 6,
+  "text": "I've always held a special place in my heart for Cheba Hut. It was definitely a college staple. Who would want a full \\\"Blunt\\\" of \\\"The Kind?\\\" Yes, it may have a little of the pothead culture to the place but that adds to the appeal. \\n\\nThe sandwiches are baked, which really brings out the flavor",
+  "true_label": "4\u2605",
+  "predicted_label": "5\u2605",
+  "confidence": 0.5167,
+  "correct": false,
+  "token_importance": [
+    {
+      "token": "this ",
+      "shap_value": 0.054421
+    },
+    {
+      "token": "delicious",
+      "shap_value": 0.050533
+    },
+    {
+      "token": "than ",
+      "shap_value": 0.050104
+    },
+    {
+      "token": "much ",
+      "shap_value": 0.044064
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.042362
+    },
+    {
+      "token": "and ",
+      "shap_value": 0.041967
+    },
+    {
+      "token": "place ",
+      "shap_value": 0.040979
+    },
+    {
+      "token": "definitely ",
+      "shap_value": -0.03608
+    },
+    {
+      "token": "staff ",
+      "shap_value": 0.034849
+    },
+    {
+      "token": "So ",
+      "shap_value": 0.034221
+    },
+    {
+      "token": "Who",
+      "shap_value": 0.029369
+    },
+    {
+      "token": "to ",
+      "shap_value": -0.024369
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.024108
+    },
+    {
+      "token": "adds ",
+      "shap_value": 0.02181
+    },
+    {
+      "token": "back",
+      "shap_value": -0.020694
+    }
+  ]
+}

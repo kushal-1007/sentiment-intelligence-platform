@@ -1,0 +1,70 @@
+{
+  "sample_id": 2,
+  "text": "You should not be called Rain, you should be called Fire! Why is this club the hottest club I've ever been to? You know there's going to be a ton of people here, why not crank the air a little. And please stop flaming up the place! \\n\\nOh the irony, rain... pfftt!\\n\\nCome here if you like house musi",
+  "true_label": "2\u2605",
+  "predicted_label": "1\u2605",
+  "confidence": 0.4652,
+  "correct": false,
+  "token_importance": [
+    {
+      "token": "stop ",
+      "shap_value": 0.127153
+    },
+    {
+      "token": "hottest ",
+      "shap_value": -0.121304
+    },
+    {
+      "token": "Why ",
+      "shap_value": 0.109449
+    },
+    {
+      "token": "h ",
+      "shap_value": -0.103882
+    },
+    {
+      "token": ".",
+      "shap_value": 0.10189
+    },
+    {
+      "token": "!",
+      "shap_value": 0.082594
+    },
+    {
+      "token": ".",
+      "shap_value": 0.077227
+    },
+    {
+      "token": "You ",
+      "shap_value": 0.07679
+    },
+    {
+      "token": "",
+      "shap_value": -0.075875
+    },
+    {
+      "token": "! ",
+      "shap_value": 0.073483
+    },
+    {
+      "token": "is ",
+      "shap_value": -0.071045
+    },
+    {
+      "token": "rain",
+      "shap_value": 0.069566
+    },
+    {
+      "token": ", ",
+      "shap_value": 0.069449
+    },
+    {
+      "token": "up ",
+      "shap_value": -0.065079
+    },
+    {
+      "token": "not ",
+      "shap_value": 0.05813
+    }
+  ]
+}

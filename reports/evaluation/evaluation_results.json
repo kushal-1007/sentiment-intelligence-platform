@@ -1,0 +1,20 @@
+{
+  "distilbert": {
+    "accuracy": 0.6265,
+    "macro_f1": 0.6264,
+    "weighted_f1": 0.6264,
+    "roc_auc_macro": 0.9007
+  },
+  "baseline_tfidf": {
+    "accuracy": 0.5747,
+    "macro_f1": 0.5732,
+    "weighted_f1": 0.5731,
+    "roc_auc_macro": 0.8702
+  },
+  "improvement": {
+    "accuracy": 0.0518,
+    "macro_f1": 0.0532,
+    "weighted_f1": 0.0533,
+    "roc_auc_macro": 0.0305
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "sample_id": 0,
+  "text": "it has been over a year since I visited this hole of a restaurant, but my experience is what counts. The staff was confused and slow to visit our table, the pizza might be the most boring bland pizza I have ever had. The soda didn't taste right and the place was a total mess. To top it off the price",
+  "true_label": "1\u2605",
+  "predicted_label": "2\u2605",
+  "confidence": 0.6642,
+  "correct": false,
+  "token_importance": [
+    {
+      "token": "amazing",
+      "shap_value": 0.183783
+    },
+    {
+      "token": "not ",
+      "shap_value": 0.112178
+    },
+    {
+      "token": "staff ",
+      "shap_value": 0.088458
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.063462
+    },
+    {
+      "token": "back ",
+      "shap_value": 0.059064
+    },
+    {
+      "token": "and ",
+      "shap_value": 0.057274
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.054827
+    },
+    {
+      "token": ". ",
+      "shap_value": 0.05336
+    },
+    {
+      "token": "total ",
+      "shap_value": 0.043854
+    },
+    {
+      "token": "might ",
+      "shap_value": -0.043655
+    },
+    {
+      "token": "and ",
+      "shap_value": 0.043455
+    },
+    {
+      "token": "bit ",
+      "shap_value": -0.041282
+    },
+    {
+      "token": "bland ",
+      "shap_value": 0.038585
+    },
+    {
+      "token": ", ",
+      "shap_value": 0.033947
+    },
+    {
+      "token": "restaurant",
+      "shap_value": 0.03246
+    }
+  ]
+}
